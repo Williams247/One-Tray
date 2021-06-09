@@ -27,6 +27,7 @@ const Section = ({ pixData, sectionName, openCloseModal }) => {
                     pixData.map((data, index) => {
                         return (
                             <Card
+                                pixFrom="Unsplash-image"
                                 image={data.urls.full}
                                 key={index}
                                 openCloseModal={openCloseModal}

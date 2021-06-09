@@ -27,6 +27,7 @@ const Section = ({ pixData, sectionName, openCloseModal }) => {
                     pixData.map((data, index) => {
                         return (
                             <Card
+                                pixFrom="Pexels-image"
                                 image={data.src.landscape}
                                 key={index}
                                 openCloseModal={openCloseModal}

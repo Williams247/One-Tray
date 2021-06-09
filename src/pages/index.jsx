@@ -12,6 +12,7 @@ import Modal from '../components/Modal';
 import Dialog from '../components/Dialog';
 import Loader from '../components/Loader';
 import Button from '../components/Button';
+import ErrorAlert from '../components/ErrorAlert';
 
 // Styles
 const styles = () => ({
@@ -35,6 +36,18 @@ const Home = ({ classes }) => {
     const [firstResult, setFirstResult] = useState([]);
     const [secondResult, setSecondResult] = useState([]);
     const [thirdResult, setThirdResult] = useState([]);
+    const [firstResultError, setFirstResultError] = useState({
+        isError: false,
+        errorMessage: ''
+    });
+    const [secondResultError, setSecondResultError] = useState({
+        isError: false,
+        errorMessage: ''
+    });
+    const [thirdResultError, setThirdResultError] = useState({
+        isError: false,
+        errorMessage: ''
+    });
     const [loading, setLoading] = useState(false);
 
     // Refs for pane
@@ -103,17 +116,22 @@ const Home = ({ classes }) => {
             setLoading(false);
             const { data: { hits } } = getFirstSearchResult;
 
-            console.log('From 1st API')
+            console.log('From Pixabay API');
             console.log(hits);
             setFirstResult(hits);
+
+            setFirstResultError({
+                isError: false,
+                errorMessage: ''
+            })
 
         } catch (error) {
             console.log(error);
             setLoading(false);
-            setErrorMessage({
-                error: true,
-                message: 'Failed to get results'
-            });
+            setFirstResultError({
+                isError: true,
+                errorMessage: 'Failed to fetch images, please try again or something else.'
+            })
         }
     }
 
@@ -127,17 +145,22 @@ const Home = ({ classes }) => {
             console.log('Second search result');
             setLoading(false);
             const { data: { results } } = getSecondSearchResult;
-            console.log('From 2nd API')
+            console.log('From Unsplash API');
             console.log(results);
-            setSecondResult(results)
+            setSecondResult(results);
+
+            setSecondResultError({
+                isError: false,
+                errorMessage: ''
+            })
 
         } catch (error) {
             console.log(error);
             setLoading(false);
-            setErrorMessage({
-                error: true,
-                message: 'Failed to get results'
-            });
+            setSecondResultError({
+                isError: true,
+                errorMessage: 'Failed to fetch images, please try again or something else.'
+            })
         }
     }
 
@@ -148,12 +171,22 @@ const Home = ({ classes }) => {
             query: searchText.toLocaleLowerCase(),
             per_page: 50
         }).then(response => {
-            console.log('From 3rd API');
+            console.log('From Pexels API');
             const { photos } = response;
             console.log(photos)
             setThirdResult(photos);
-        });
 
+            setThirdResultError({
+                isError: false,
+                errorMessage: ''
+            })
+
+        }).catch(() => {
+            setThirdResultError({
+                isError: true,
+                errorMessage: 'Failed to fetch images, please try again or something else.'
+            })
+        })
     }
 
     // Submit function that calls all the 3 search result
@@ -220,7 +253,7 @@ const Home = ({ classes }) => {
                         id="active"
                         className="tabs"
                     >
-                        1st Result
+                        Pixabay
                         </div>
                     <div
                         onClick={() => switchResultPane(2)}
@@ -233,7 +266,7 @@ const Home = ({ classes }) => {
                         id=""
                         className="tabs"
                     >
-                        2nd Result
+                        Unsplash
                     </div>
                     <div
                         onClick={() => switchResultPane(3)}
@@ -246,7 +279,7 @@ const Home = ({ classes }) => {
                         id=""
                         className="tabs"
                     >
-                        3rd Result
+                        Pexels
                     </div>
                 </div>
 
@@ -259,13 +292,25 @@ const Home = ({ classes }) => {
                                 firstResult.length === 0 ? (
                                     <h2 style={{ color: '#4e4e4e' }}>
                                         No Results yet!
+                                        {firstResultError.isError && (
+                                            <div style={{ marginTop: '35px' }}>
+                                                <ErrorAlert errorMessage={firstResultError.errorMessage} />
+                                            </div>
+                                        )}
                                     </h2>
                                 ) : (
-                                    <SectionOne
-                                        openCloseModal={openCloseModal}
-                                        sectionName="1st Result"
-                                        pixData={firstResult}
-                                    />
+                                    <div>
+                                        {firstResultError.isError && (
+                                            <div style={{ marginTop: '35px' }}>
+                                                <ErrorAlert errorMessage={firstResultError.errorMessage} />
+                                            </div>
+                                        )}
+                                        <SectionOne
+                                            openCloseModal={openCloseModal}
+                                            sectionName="Pixabay"
+                                            pixData={firstResult}
+                                        />
+                                    </div>
                                 )
                             }
 
@@ -277,13 +322,25 @@ const Home = ({ classes }) => {
                                 firstResult.length === 0 ? (
                                     <h2 style={{ color: '#4e4e4e' }}>
                                         No Results yet!
+                                        {secondResultError.isError && (
+                                            <div style={{ marginTop: '35px' }}>
+                                                <ErrorAlert errorMessage={secondResultError.errorMessage} />
+                                            </div>
+                                        )}
                                     </h2>
                                 ) : (
-                                    <SectionTwo
-                                        openCloseModal={openCloseModal}
-                                        sectionName="2nd Result"
-                                        pixData={secondResult}
-                                    />
+                                    <div>
+                                        {secondResultError.isError && (
+                                            <div style={{ marginTop: '35px' }}>
+                                                <ErrorAlert errorMessage={secondResultError.errorMessage} />
+                                            </div>
+                                        )}
+                                        <SectionTwo
+                                            openCloseModal={openCloseModal}
+                                            sectionName="Unsplash"
+                                            pixData={secondResult}
+                                        />
+                                    </div>
                                 )
                             }
                         </div>
@@ -294,13 +351,25 @@ const Home = ({ classes }) => {
                                 firstResult.length === 0 ? (
                                     <h2 style={{ color: '#4e4e4e' }}>
                                         No Results yet!
+                                        {thirdResultError.isError && (
+                                            <div style={{ marginTop: '35px' }}>
+                                                <ErrorAlert errorMessage={thirdResultError.errorMessage} />
+                                            </div>
+                                        )}
                                     </h2>
                                 ) : (
-                                    <SectionThree
-                                        openCloseModal={openCloseModal}
-                                        sectionName="3rd Result"
-                                        pixData={thirdResult}
-                                    />
+                                    <div>
+                                        {thirdResultError.isError && (
+                                            <div style={{ marginTop: '35px' }}>
+                                                <ErrorAlert errorMessage={thirdResultError.errorMessage} />
+                                            </div>
+                                        )}
+                                        <SectionThree
+                                            openCloseModal={openCloseModal}
+                                            sectionName="Pexels"
+                                            pixData={thirdResult}
+                                        />
+                                    </div>
                                 )
                             }
                         </div>

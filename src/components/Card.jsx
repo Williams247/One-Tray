@@ -4,17 +4,17 @@ import Button from '@material-ui/core/Button';
 import ImageView from './ImageView';
 import './style.css';
 
-const CardComponent = ({ image, openCloseModal }) => {
+const CardComponent = ({ pixFrom, image, openCloseModal }) => {
 
     // Function to download an image
-    const downLoadImage = async (imageSrc, imageDescription) => {
+    const downLoadImage = async imageSrc => {
         const image = await fetch(imageSrc);
         const imageBlog = await image.blob();
         const imageURL = URL.createObjectURL(imageBlog);
 
         const link = document.createElement('a');
         link.href = imageURL;
-        link.download = imageDescription;
+        link.download = pixFrom;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -40,7 +40,7 @@ const CardComponent = ({ image, openCloseModal }) => {
                                 Full view
                         </Button>
                             <Button
-                                onClick={() => downLoadImage(image, 'one-source-image')}
+                                onClick={() => downLoadImage(image)}
                                 style={{
                                     background: '#4e4e4e',
                                     color: 'white',

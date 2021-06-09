@@ -11,7 +11,7 @@ const Description = ({label, underline}) => {
                             width: '45px',
                             height: '5px',
                             marginTop: '5px',
-                            background: 'black'
+                            background: '#4e4e4e'
                         }}></div>
                     )}
                 </Typography>

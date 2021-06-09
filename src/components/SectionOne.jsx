@@ -27,6 +27,7 @@ const Section = ({ pixData, sectionName, openCloseModal }) => {
                     pixData.map((data, index) => {
                         return (
                             <Card
+                                pixFrom="Pixabay-image"
                                 image={data.largeImageURL}
                                 key={index}
                                 openCloseModal={openCloseModal}
