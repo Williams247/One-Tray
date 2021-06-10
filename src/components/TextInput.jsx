@@ -32,7 +32,7 @@ const TextInput = ({ classes, TextFieldOnchange, textValue }) => (
         <TextField
             onChange={TextFieldOnchange}
             value={textValue}
-            label="Search image....."
+            label="Search image"
             className={classes.textField}
             type="text"
             name="text"
@@ -62,7 +62,7 @@ const TextInput = ({ classes, TextFieldOnchange, textValue }) => (
 )
 
 TextInput.propTypes = {
-    classes: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
 }
 
 export default withStyles(styles)(TextInput);

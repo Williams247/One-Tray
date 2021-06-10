@@ -1,8 +1,10 @@
 import Modal from '@material-ui/core/Modal';
 
-const AppModal = ({isOpen, children}) => {
+const AppModal = ({isOpen, children, ...props}) => {
     return (
-        <Modal open={isOpen}
+        <Modal
+            {...props}
+            open={isOpen}
             style={{
                 overflow: 'auto',
                 paddingBottom: '33px'

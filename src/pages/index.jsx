@@ -2,30 +2,28 @@ import { useState, useRef } from 'react';
 import { createClient } from 'pexels';
 import Axios from 'axios';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import Close from '@material-ui/icons/Close';
 import TextInput from '../components/TextInput';
 import SectionOne from '../components/SectionOne';
 import SectionTwo from '../components/SectionTwo';
 import SectionThree from '../components/SectionThree';
+import ErrorAlert from '../components/ErrorAlert';
 import Modal from '../components/Modal';
 import Dialog from '../components/Dialog';
 import Loader from '../components/Loader';
 import Button from '../components/Button';
-import ErrorAlert from '../components/ErrorAlert';
 
 // Styles
 const styles = () => ({
     modalBox: {
         width: '90%',
         marginLeft: '5%',
-        background: 'white',
         marginTop: '25px'
     },
     modalBoxHead: {
         background: '#4e4e4e',
-        paddingTop: '12px',
-        paddingBottom: '15px',
         textIndent: '15px'
     }
 });
@@ -48,28 +46,28 @@ const Home = ({ classes }) => {
         isError: false,
         errorMessage: ''
     });
+    const [errorMessage, setErrorMessage] = useState({
+        error: false,
+        message: ''
+    });
+    const [modal, setModal] = useState({
+        open: false,
+        imageUrl: '',
+        description: ''
+    });
     const [loading, setLoading] = useState(false);
 
     // Refs for pane
     const firstResultPanel = useRef();
     const secondResultPanel = useRef();
     const thirdResultPanel = useRef();
+    const imageLoading = useRef();
+    const imageLoaded = useRef();
 
     // Refs for tabs
     const firstResultTab = useRef();
     const secondResultTab = useRef();
     const thirdResultTab = useRef();
-
-    const [errorMessage, setErrorMessage] = useState({
-        error: false,
-        message: ''
-    });
-
-    const [modal, setModal] = useState({
-        open: false,
-        imageUrl: '',
-        description: ''
-    });
 
     // Functionality to switch panes
     const switchResultPane = (index) => {
@@ -110,6 +108,7 @@ const Home = ({ classes }) => {
     const firstSearchResult = async () => {
         // API for pixabay
         setLoading(true);
+        setFirstResult([]);
 
         try {
             const getFirstSearchResult = await Axios.get(`https://pixabay.com/api/?key=21875002-1ad64de0d03b15dae54da65fa&q=${searchText.toLocaleLowerCase()}&image_type=photo`);
@@ -139,9 +138,10 @@ const Home = ({ classes }) => {
     const secondSearchResult = async () => {
         // API for unsplash
         setLoading(true);
+        setSecondResult([]);
 
         try {
-            const getSecondSearchResult = await Axios.get(`https://api.unsplash.com/search/photos/?page=1&per_page=30&query=${searchText.toLocaleLowerCase()}&client_id=O0YGcWeNQDPcpP7014RI8tg7fT5tC_jxLuWHIDd1P7U`);
+            const getSecondSearchResult = await Axios.get(`https://api.unsplash.com/search/photos/?page=1&per_page=100&query=${searchText.toLocaleLowerCase()}&client_id=O0YGcWeNQDPcpP7014RI8tg7fT5tC_jxLuWHIDd1P7U`);
             console.log('Second search result');
             setLoading(false);
             const { data: { results } } = getSecondSearchResult;
@@ -166,10 +166,12 @@ const Home = ({ classes }) => {
 
     // Function to get result from the third image pane
     const thirdSearchResult = () => {
+        setThirdResult([]);
+
         const client = createClient('563492ad6f917000010000010493a61d43dc44de86bf06a75f749a95');
         client.photos.search({
             query: searchText.toLocaleLowerCase(),
-            per_page: 50
+            per_page: 100
         }).then(response => {
             console.log('From Pexels API');
             const { photos } = response;
@@ -224,6 +226,29 @@ const Home = ({ classes }) => {
             imageUrl: imageUrl,
             description: description
         })
+    }
+
+    // Function to load an image
+    const loadImage = () => {
+        imageLoading.current.style.display = 'none';
+        imageLoaded.current.style.display = 'block';
+    }
+
+    // A function that closes up full image view
+    const closeModalOnEscapeKey = event => {
+        if (event.key === 'Escape') {
+            openCloseModal(false, '', '')
+        }
+    }
+
+    // A function that closes up dialogs for error
+    const closeErrorDialog = event => {
+        if (event.key === 'Escape') {
+            setErrorMessage({
+                error: false,
+                message: ''
+            })
+        }
     }
 
     return (
@@ -377,43 +402,44 @@ const Home = ({ classes }) => {
                 </div>
             </div>
             {/* Large image display modal */}
-            <Modal isOpen={modal.open}>
+            <Modal isOpen={modal.open} onKeyDown={closeModalOnEscapeKey}>
                 <div className={classes.modalBox}>
                     <div className={classes.modalBoxHead}>
-                        <div>
+                        <div style={{ display: 'flex' }}>
                             <div style={{ width: '95%' }}>
-                                <Typography
-                                    variant="h5"
+                                <h2
                                     style={{
                                         fontWeight: 'bold',
-                                        paddingTop: '9px',
                                         color: 'white'
-                                    }}>
-                                    Full view
-                                </Typography>
+                                    }}
+                                >
+                                    Full View
+                                </h2>
+                            </div>
+                            <IconButton
+                                onClick={() => openCloseModal(false, '', '')}
+                                style={{ color: 'white' }}
+                            >
+                                <Close />
+                            </IconButton>
+                        </div>
+                    </div>
+                    <div ref={imageLoading} style={{ background: 'white', paddingTop: '25px', paddingBottom: '35px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '18px' }}>
+                            <div style={{ display: 'flex', fontWeight: 'bold' }}>
+                                <Loader /> <div style={{ margin: '8px 18px' }}>Loading....</div>
                             </div>
                         </div>
                     </div>
-                    <img
-                        src={modal.imageUrl}
-                        alt="Weaverbell shots"
-                        style={{ width: '100%' }}
-                        onContextMenu={event => event.preventDefault()}
-                    />
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        paddingTop: '12px'
-                    }}>
-                        <Button
-                            onClick={() => openCloseModal(false, '', '')}
-                            buttonBackground="#4e4e4e"
-                            buttonColor="white"
-                            label="Close"
-                            btnType="button"
+                    <div ref={imageLoaded} className="hide">
+                        <img
+                            src={modal.imageUrl}
+                            alt="Weaverbell shots"
+                            style={{ width: '100%' }}
+                            onContextMenu={event => event.preventDefault()}
+                            onLoad={loadImage}
                         />
                     </div>
-                    <br />
                 </div>
             </Modal>
             {/* Request loader */}
@@ -430,7 +456,7 @@ const Home = ({ classes }) => {
                 </div>
             </Dialog>
             {/* Error message loader */}
-            <Dialog isOpen={errorMessage.error}>
+            <Dialog isOpen={errorMessage.error} onKeyDown={closeErrorDialog}>
                 <div>
                     <h3 style={{ color: 'orangered', fontWeight: 'bold' }}>
                         {errorMessage.message}

@@ -8,6 +8,7 @@ const styles = () => ({
         color: '#4e4e4e'
     },
     link: {
+        cursor: 'pointer',
         marginLeft: '8px',
         textDecoration: 'underline',
         '&:hover': {
@@ -24,7 +25,7 @@ const About = ({ classes }) => {
         <div className={classes.about}>
             <div style={{ marginTop: '108px', color: '#4e4e4e' }}>
                 <Description
-                    label="About us"
+                    label="About"
                     underline={true}
                 />
                 <div style={{ marginTop: '38px' }}>
@@ -33,22 +34,20 @@ const About = ({ classes }) => {
                         Made with love x
                         <span
                             onClick={() => openLinkInNewTab('https://github.com/Williams247')}
-                            style={{ cursor: 'pointer' }}
                             title="Click here"
                         >
                             <span className={classes.link}>Williams</span>
                         </span>
                         <span style={{ marginLeft: '8px' }}>x</span>
                         <span
-                            onClick={() => openLinkInNewTab(' https://twitter.com/obiokeke_')}
-                            style={{ cursor: 'pointer' }}
+                            onClick={() => openLinkInNewTab('https://twitter.com/obiokeke_')}
                             title="Click here"
                         >
-                            <span className={classes.link}>Daniel</span>
+                            <span className={classes.link}>Daniel</span>.
                         </span>
                     </h2>
                     <h2>
-                        &copy; Weaverbell 2021
+                        &copy; <span className={classes.link} onClick={() => openLinkInNewTab('https://weaverbell.co/')}>Weaverbell 2021</span>.
                     </h2>
                 </div>
             </div>

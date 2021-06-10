@@ -25,7 +25,7 @@ const CardComponent = ({ pixFrom, image, openCloseModal }) => {
             <Card>
                 <ImageView
                     imageUrl={image}
-                    alt='Weaverbell image'
+                    alt={pixFrom}
                 />
                 <Container style={{ paddingBottom: '23px', paddingTop: '18px' }}>
                     <div>
